@@ -50,13 +50,13 @@
         var res = await fetch('https://pokeapi.co/api/v2/pokemon')
         // console.log(res)
         var data = await res.json()
-        console.log(data.results)
+        // console.log(data.results)
         //getinfo(data.results)
         var arr = []
         data.results.forEach(element => {
             arr.push(element.name)
         });
-        console.log(arr)
+        // console.log(arr)
         localStorage.setItem('pokemon', JSON.stringify(arr))
     }
 
