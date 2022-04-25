@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <table id="container">
+        <tr>
+            <th>Names Of Pokemon</th>
+        </tr>
+    </table>
+
+    <input type="text" id="searchtext">
+    <button onclick="search()">Search</button>
+
+    <div id="display"></div>
+
+</body>
+<script>
+
+    var container = document.querySelector('#container');
+    var searchtext = document.querySelector('#searchtext');
+    var display = document.querySelector('#display')
+
+    if (localStorage.getItem('pokemon') == null) {
+        getdata()
+        setTimeout(displayname, 1000)
+    } else {
+        console.log('data stored alreaaady')
+        displayname()
+    }
+
+
+    async function getdata() {
+        var res = await fetch('https://pokeapi.co/api/v2/pokemon')
+        // console.log(res)
+        var data = await res.json()
+        console.log(data.results)
+        //getinfo(data.results)
+        var arr = []
+        data.results.forEach(element => {
+            arr.push(element.name)
+        });
+        console.log(arr)
+        localStorage.setItem('pokemon', JSON.stringify(arr))
+    }
+
+    function displayname() {
+        var data = JSON.parse(localStorage.getItem('pokemon'))
+        data.forEach(element => {
+            var tr = document.createElement('tr')
+            tr.innerHTML =
+                `
+                <td>${element}</td>
+            `
+            container.append(tr)
+        });
+    }
+
+
+    function search() {
+        console.log(searchtext.value)
+        display.innerHTML = ''
+        async function getinfo() {
+            var res = await fetch(`https://pokeapi.co/api/v2/pokemon/${searchtext.value}`)
+            // console.log(res)
+            var data = await res.json()
+
+            var abi = []
+            var move = []
+            var id = data.id
+            var height = data.height
+            var weight = data.weight
+
+            data.abilities.forEach(element => {
+                abi.push(element.ability.name)
+            });
+            data.moves.forEach(element => {
+                move.push(element.move.name)
+            });
+            // console.log(data)
+            // console.log('id',id)
+            // console.log('name',searchtext.value)
+            // console.log('height',height)
+            // console.log('weight',weight)
+            // console.log('abilities',abi.join(','))
+            // console.log('move',move.join(','))
+
+            var div = document.createElement('div')
+            var info = 
+            `
+                <h1>ID : ${id}</h1>
+                <h1>Pokemon Name : ${searchtext.value}</h1>
+                <h2>Pokemon Height : ${height}</h2>
+                <h3>Pokemon Weight : ${weight}</h3>
+                <h3>Pokemon Abilities : </h3>
+                <p>${abi.join(',')}</p>
+                <h3>Pokemon Moves : </h3>
+                <p>${move.join(',')}</p>
+            `
+            div.innerHTML = info
+            display.append(div)
+        }
+        getinfo()
+    }
+</script>
+
+</html>
