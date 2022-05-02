@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/5594c2eb28.js" crossorigin="anonymous"></script>
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            /* box-sizing: border-box; */
+        }
+
+
+        #inpt {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin: 50px auto;
+            width: 30%;
+        }
+
+        input {
+            padding: 10px;
+            font-size: large;
+            width: 100%;
+            border: 0;
+            border-bottom: 5px solid salmon;
+            border-radius: 5.5px;
+            outline: none;
+        }
+
+        label {
+            position: absolute;
+            left: 20px;
+            top: 15px;
+            font-size: large;
+            color: rgb(61, 61, 61);
+            transition: all 0.3s ease-in-out;
+        }
+
+
+        input:focus+label,
+        input:valid+label {
+            top: -15px;
+            left: 10px;
+            font-size: small;
+            color: gray;
+        }
+
+
+        button {
+            border: 2px solid salmon;
+            background: linear-gradient(to left, white 50%, salmon 50%) right;
+            background-size: 200%;
+            transition: all .5s ease-in-out;
+            border-radius: 10px;
+            width: 200px;
+            padding: 15px;
+            margin: auto;
+            font-size: large;
+            margin-left: 20px;
+        }
+
+        button:hover {
+            background-position: left;
+            color: white;
+        }
+
+        #display {
+            display: flex;
+            margin: auto;
+            align-items: center;
+            justify-content: center;
+            width: 50%;
+            height: 300px;
+            background-color: rgb(43, 48, 63);
+            padding: 25px;
+        }
+
+        #part1 {
+            width: 35%;
+            height: 100%;
+            border: 1px solid red;
+            border-radius: 20px;
+            padding: 10px;
+            color: white;
+            background-color: skyblue;
+            line-height: 30px;
+        }
+
+        #part1>h3+i {
+            font-size: 100px;
+            margin: 20px;
+            color: yellow;
+        }
+
+        #part2 {
+            width: 35%;
+            height: 100%;
+            border: 1px solid red;
+            border-radius: 20px;
+            color: white;
+            display: flex;
+            /* align-items: center; */
+            justify-content: center;
+            flex-direction: column;
+            line-height: 30px;
+            padding: 10px;
+        }
+
+        #part2>table {
+            font-size: 19px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="inpt">
+        <input type="text" id="city" required>
+        <label for="city">Enter City Name</label>
+        <button onclick="search()">Search</button>
+    </div>
+
+    <div id="display">
+    </div>
+
+</body>
+<script>
+    var city = document.querySelector('#city')
+    var display = document.querySelector('#display')
+    var apikey = '9f30b7350c19c2dbcd837723a86b345c'
+    var d = new Date();
+    // console.log(d.getDay())
+    var day;
+    if (d.getDay() == 0) {
+        day = 'Sunday'
+    }
+    if (d.getDay() == 1) {
+        day = 'Monday'
+    }
+    if (d.getDay() == 2) {
+        day = 'Tueday'
+    }
+    if (d.getDay() == 3) {
+        day = 'Wednesday'
+    }
+    if (d.getDay() == 4) {
+        day = 'Thursday'
+    }
+    if (d.getDay() == 5) {
+        day = 'Friday'
+    }
+    if (d.getDay() == 6) {
+        day = 'Saturday'
+    }
+    
+
+
+        async function search() {
+            try {
+            var res = fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city.value}&appid=${apikey}&units=metric`)
+            // var res = fetch(`https://api.openweathermap.org/data/2.5/weather?q=${'pune'}&appid=${apikey}`)
+            console.log(res)
+            var a = await res
+            var data = await a.json()
+            console.log(data)
+            var icon;
+
+
+            if (data.weather[0].description == 'clear sky') {
+                icon = '<i class="fa-solid fa-sun"></i>'
+            } else {
+                icon = '<i class="fa-solid fa-cloud"></i>'
+            }
+
+            var content =
+                `
+        <div id="part1">
+            <h2>${day}</h2>
+            <h3>${d.getDate()}-${d.getMonth()}-${d.getFullYear()}</h3>
+            <h3> <i class="fa-solid fa-location-dot"></i> ${city.value} </h3>
+
+            ${icon}
+
+        </div>
+        <div id="part2">
+            <table>
+                <tr>
+                    <td>Temperature</td>
+                    <td>${data.main.temp} ℃</td>
+                </tr>
+                <tr>
+                    <td>Pressure</td>
+                    <td>${data.main.pressure}</td>
+                </tr>
+                <tr>
+                    <td>Humidity</td>
+                    <td>${data.main.humidity}</td>
+                </tr>
+                <tr>
+                    <td>Wind Speed</td>
+                    <td>${data.wind.speed}</td>
+                </tr>
+                <tr>
+                    <td>Sunrise</td>
+                    <td>${data.sys.sunrise}</td>
+                </tr>
+                <tr>
+                    <td>Sunset</td>
+                    <td>${data.sys.sunset}</td>
+                </tr>
+                <tr>
+                    <td>Weather Description</td>
+                    <td>${data.weather[0].description}</td>
+                </tr>
+            </table>
+        </div>
+        `
+            display.innerHTML = content
+
+        } catch (error) {
+            console.log('Please Enter City Name')
+            alert('Please Enter City Name')
+    }
+
+        }
+    
+    // search()
+</script>
+
+</html>
